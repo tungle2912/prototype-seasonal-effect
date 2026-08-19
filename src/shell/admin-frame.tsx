@@ -2,16 +2,15 @@ import { Button, Frame, Navigation, TopBar } from '@shopify/polaris';
 import {
   DiscountIcon,
   HomeIcon,
-  LayoutBlockIcon,
   OrderIcon,
   PersonIcon,
   ProductIcon,
 } from '@shopify/polaris-icons';
-import { useCallback, useState, type ReactNode } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router';
+import { useState, type ReactNode } from 'react';
+import { useLocation } from 'react-router';
 
-import { prototypes } from '../lib/registry';
 import { shop } from '../mocks/shop';
+import { useAppNavMenu } from './app-nav';
 import { useChromeHidden, useSetChromeHidden } from './chrome-state';
 
 /**
@@ -23,11 +22,14 @@ import { useChromeHidden, useSetChromeHidden } from './chrome-state';
  * so screenshots read as "a feature inside Shopify" rather than "a web page".
  *
  * Append `?chrome=off` to any prototype URL to strip it away.
+ *
+ * A prototype that mocks a whole app (several sections, not one screen) can
+ * publish its own menu with `useRegisterAppNav()`; it renders here as an extra
+ * sidebar section, which is where App Bridge puts `<ui-nav-menu>` in the real
+ * admin. See `src/shell/app-nav.tsx`.
  */
 export function AdminFrame({ children }: { children: ReactNode }) {
-  const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -35,16 +37,7 @@ export function AdminFrame({ children }: { children: ReactNode }) {
 
   const chromeHidden = useChromeHidden();
   const setChromeHidden = useSetChromeHidden();
-
-  // Preserve ?state= and ?chrome= across navigation so a linked demo state survives.
-  const go = useCallback(
-    (to: string) => {
-      const query = searchParams.toString();
-      navigate(query ? `${to}?${query}` : to);
-      setMobileNavOpen(false);
-    },
-    [navigate, searchParams],
-  );
+  const appNav = useAppNavMenu();
 
   if (chromeHidden) {
     return (
@@ -67,12 +60,7 @@ export function AdminFrame({ children }: { children: ReactNode }) {
       open={userMenuOpen}
       onToggle={() => setUserMenuOpen((open) => !open)}
       actions={[
-        {
-          items: [
-            { content: 'Hide admin chrome', onAction: () => setChromeHidden(true) },
-            { content: 'All prototypes', onAction: () => go('/') },
-          ],
-        },
+        { items: [{ content: 'Hide admin chrome', onAction: () => setChromeHidden(true) }] },
       ]}
     />
   );
@@ -107,23 +95,21 @@ export function AdminFrame({ children }: { children: ReactNode }) {
         ]}
       />
 
-      <Navigation.Section
-        separator
-        title="Prototypes"
-        items={[
-          {
-            label: 'All prototypes',
-            icon: LayoutBlockIcon,
-            selected: location.pathname === '/',
-            onClick: () => go('/'),
-          },
-          ...prototypes.map((entry) => ({
-            label: entry.title,
-            selected: location.pathname === `/p/${entry.slug}`,
-            onClick: () => go(`/p/${entry.slug}`),
-          })),
-        ]}
-      />
+      {/* The open prototype's own sections, mirroring App Bridge ui-nav-menu. */}
+      {appNav ? (
+        <Navigation.Section
+          separator
+          title={appNav.title}
+          items={appNav.items.map((item) => ({
+            label: item.label,
+            icon: item.icon,
+            selected: item.selected,
+            badge: item.badge,
+            onClick: item.onClick,
+          }))}
+        />
+      ) : null}
+
     </Navigation>
   );
 

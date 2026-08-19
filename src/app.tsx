@@ -1,8 +1,8 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router';
 
 import { AdminFrame } from './shell/admin-frame';
+import { AppNavProvider } from './shell/app-nav-provider';
 import { PrototypeHost } from './shell/prototype-host';
-import { PrototypeIndex } from './shell/prototype-index';
 
 /**
  * HashRouter, not BrowserRouter: GitHub Pages serves static files and cannot
@@ -12,13 +12,15 @@ import { PrototypeIndex } from './shell/prototype-index';
 export default function App() {
   return (
     <HashRouter>
-      <AdminFrame>
-        <Routes>
-          <Route path="/" element={<PrototypeIndex />} />
-          <Route path="/p/:slug" element={<PrototypeHost />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AdminFrame>
+      <AppNavProvider>
+        <AdminFrame>
+          <Routes>
+            <Route path="/p/:slug" element={<PrototypeHost />} />
+            {/* One app lives here, so the root is that app rather than an index. */}
+            <Route path="*" element={<Navigate to="/p/seasonal-effects" replace />} />
+          </Routes>
+        </AdminFrame>
+      </AppNavProvider>
     </HashRouter>
   );
 }

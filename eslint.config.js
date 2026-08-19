@@ -60,4 +60,26 @@ export default tseslint.config(
     files: ['src/prototypes/_template/**'],
     rules: { 'react-refresh/only-export-components': 'off' },
   },
+
+  // --- Narrow exception to the no-hex rule ---
+  //
+  // The rule exists so admin *chrome* stays on Polaris tokens. Two kinds of
+  // colour are not chrome:
+  //
+  //   1. Colour the merchant picks. A seasonal palette, a brand colour, a
+  //      button colour: the value is content, and a Polaris token cannot
+  //      express "the merchant chose #C0392B".
+  //   2. Colour inside a simulated storefront. A storefront preview is meant to
+  //      look like the merchant's theme, not like the admin, so borrowing admin
+  //      tokens there would make the preview lie.
+  //
+  // Everything else — every border, background and label of the admin UI — is
+  // still a lint error. See docs/prototype-rules.md.
+  {
+    files: [
+      'src/mocks/seasonal-effects/palettes.ts',
+      'src/prototypes/seasonal-effects/components/preview/**',
+    ],
+    rules: { 'no-restricted-syntax': 'off' },
+  },
 );

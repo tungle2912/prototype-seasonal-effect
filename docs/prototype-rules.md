@@ -16,6 +16,18 @@ feature is later implemented for real.
 - **No hardcoded colors.** Hex literals are a lint error. Use Polaris design
   tokens (`var(--p-color-*)`, `var(--p-space-*)`). If you find yourself needing
   a color Polaris does not have, that is a signal the design is drifting.
+- **Two exceptions, and only two.** A hex literal is allowed when the color is
+  *not* admin chrome:
+  1. **Color as content** — a value the merchant picks and the app stores, like a
+     brand color or a seasonal palette. A token cannot express "the merchant
+     chose `#C0392B`". Keep these in one fixture file under `src/mocks/`.
+  2. **Color inside a simulated storefront** — a preview is supposed to look
+     like the merchant's theme, not like the admin, so admin tokens would make
+     the preview lie. Keep these in the preview component's own folder.
+
+  Both exceptions must be declared as an explicit `files:` override in
+  `eslint.config.js` with a comment saying why. Every other border, background
+  and label stays on tokens.
 - **Custom CSS only for layout** that Polaris does not cover, kept inline or
   next to the component. No global stylesheets.
 - **Follow admin page structure**: `Page` → `Layout` → `Layout.Section` →

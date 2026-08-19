@@ -68,6 +68,8 @@ src/
 │   ├── admin-frame.tsx        Fake admin chrome (Frame/TopBar/Navigation)
 │   ├── prototype-index.tsx    Index page with search and filters
 │   ├── prototype-host.tsx     Per-prototype wrapper: banner, state switcher
+│   ├── app-nav.ts             Sidebar menu a multi-screen prototype can publish
+│   ├── app-nav-provider.tsx   Holds that menu for AdminFrame to read
 │   └── chrome-state.ts        ?chrome=off handling
 ├── lib/
 │   ├── registry.ts            Auto-discovery of prototypes
@@ -75,12 +77,27 @@ src/
 │   └── format.ts              Money, dates, numbers, GIDs
 ├── mocks/                     Fixtures shaped like the Admin API
 └── prototypes/
-    └── _template/             Copied by pnpm new-prototype
+    ├── _template/             Copied by pnpm new-prototype
+    └── seasonal-effects/      A whole-app mock: six screens, one shared store
 ```
 
-The base ships no example prototypes — `pnpm new-prototype <slug>` gives you the
-first one. Ready-made fixtures for products, orders, customers and the shop are
-already in `src/mocks/`.
+Ready-made fixtures for products, collections, orders, customers, markets and the
+shop are already in `src/mocks/`.
+
+## Prototyping a whole app, not one screen
+
+Most prototypes are one screen. When you are mocking an app with several sections,
+publish its menu with `useRegisterAppNav()` from `src/shell/app-nav.ts` and it
+appears in the admin sidebar — which is where App Bridge puts `<ui-nav-menu>` in
+the real admin. Navigate between the sections with local state, never a router:
+
+```tsx
+const navMenu = useMemo<AppNavMenu>(() => ({ title: 'My app', items: [...] }), [screen]);
+useRegisterAppNav(navMenu);
+```
+
+Memoize the menu — a fresh object on every render loops through the provider.
+`src/prototypes/seasonal-effects/` is the worked example.
 
 ## Before you build
 

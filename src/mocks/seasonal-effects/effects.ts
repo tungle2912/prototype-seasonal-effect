@@ -1,0 +1,155 @@
+/**
+ * The effect catalogue: what a merchant can pick for each of the seven effects.
+ *
+ * Every option that a merchant has to *see* to understand carries a glyph, not
+ * just a label — nobody knows what "Sparkle" looks like from the word "Sparkle".
+ * Tile background colours live in palettes.ts, the one file allowed hex.
+ */
+
+export type FallingArtwork =
+  | 'SNOWFALL'
+  | 'FALLING_LEAVES'
+  | 'SPARKLE'
+  | 'HEARTS'
+  | 'CASH'
+  | 'GIFT_BOXES'
+  | 'BATS'
+  | 'LIGHTNING'
+  | 'BLOSSOM'
+  | 'DIWALI_LAMPS'
+  | 'BOUQUETS'
+  | 'SUNSHINE';
+
+export interface ArtworkOption {
+  value: FallingArtwork;
+  label: string;
+  glyph: string;
+}
+
+export const fallingArtwork: ArtworkOption[] = [
+  { value: 'SNOWFALL', label: 'Snowfall', glyph: '❄' },
+  { value: 'FALLING_LEAVES', label: 'Falling leaves', glyph: '🍁' },
+  { value: 'SPARKLE', label: 'Sparkle', glyph: '✨' },
+  { value: 'HEARTS', label: 'Hearts', glyph: '💗' },
+  { value: 'CASH', label: 'Cash', glyph: '💵' },
+  { value: 'GIFT_BOXES', label: 'Gift boxes', glyph: '🎁' },
+  { value: 'BATS', label: 'Bats', glyph: '🦇' },
+  { value: 'LIGHTNING', label: 'Lightning', glyph: '⚡' },
+  { value: 'BLOSSOM', label: 'Blossom', glyph: '🌸' },
+  { value: 'DIWALI_LAMPS', label: 'Diwali lamps', glyph: '🪔' },
+  { value: 'BOUQUETS', label: 'Bouquets', glyph: '💐' },
+  { value: 'SUNSHINE', label: 'Sunshine', glyph: '☀️' },
+];
+
+export const artworkLabel = (value: FallingArtwork): string =>
+  fallingArtwork.find((option) => option.value === value)?.label ?? 'Snowfall';
+
+export const artworkGlyph = (value: FallingArtwork): string =>
+  fallingArtwork.find((option) => option.value === value)?.glyph ?? '❄';
+
+export type DecorationStyle = 'STRING_LIGHTS' | 'GARLAND' | 'SNOW_DRIFT' | 'COBWEBS';
+
+export interface DecorationOption {
+  value: DecorationStyle;
+  label: string;
+  /** Where it attaches — the merchant needs this to picture the result. */
+  placement: string;
+}
+
+export const decorationStyles: DecorationOption[] = [
+  { value: 'STRING_LIGHTS', label: 'String lights', placement: 'Top edge' },
+  { value: 'GARLAND', label: 'Garland', placement: 'Header' },
+  { value: 'SNOW_DRIFT', label: 'Snow drift', placement: 'Footer' },
+  { value: 'COBWEBS', label: 'Cobwebs', placement: 'Corners' },
+];
+
+export const decorationLabel = (value: DecorationStyle): string =>
+  decorationStyles.find((option) => option.value === value)?.label ?? 'String lights';
+
+export type CountdownStyle = 'PILL' | 'PLAIN' | 'DIGIT_BOXES' | 'LABELLED';
+
+export const countdownStyles: { value: CountdownStyle; label: string }[] = [
+  { value: 'PILL', label: 'Pill' },
+  { value: 'PLAIN', label: 'Plain text' },
+  { value: 'DIGIT_BOXES', label: 'Digit boxes' },
+  { value: 'LABELLED', label: 'Labelled' },
+];
+
+export type Density = 'LIGHT' | 'MEDIUM' | 'DENSE';
+
+/** Particle count at full quality. Speed guard scales these down (PRD 15.4). */
+export const densityParticles: Record<Density, number> = {
+  LIGHT: 24,
+  MEDIUM: 50,
+  DENSE: 90,
+};
+
+export const densityLabel: Record<Density, string> = {
+  LIGHT: 'Light',
+  MEDIUM: 'Medium',
+  DENSE: 'Dense',
+};
+
+export type ParticleColour = 'STOCK' | 'BRAND';
+
+export const particleColourLabel: Record<ParticleColour, string> = {
+  STOCK: 'Stock artwork',
+  BRAND: 'Brand palette',
+};
+
+export type CursorParticles = 'MATCH_FALLING' | 'SPARKLE';
+export type TrailLength = 'SHORT' | 'MEDIUM' | 'LONG';
+
+export const trailLabel: Record<TrailLength, string> = {
+  SHORT: 'Short',
+  MEDIUM: 'Medium',
+  LONG: 'Long',
+};
+
+export type CountdownZeroBehaviour = 'HIDE_BAR' | 'KEEP_BAR_DROP_TIMER' | 'FOLLOW_UP_MESSAGE';
+
+export const zeroBehaviourOptions: { value: CountdownZeroBehaviour; label: string }[] = [
+  { value: 'HIDE_BAR', label: 'Hide the bar' },
+  { value: 'KEEP_BAR_DROP_TIMER', label: 'Keep the bar, drop the timer' },
+  { value: 'FOLLOW_UP_MESSAGE', label: 'Switch to a follow-up message' },
+];
+
+export type MusicTrack = 'JINGLE_SOFT' | 'WINTER_PIANO' | 'LOFI_HOLIDAY' | 'MARKET_STRINGS';
+
+export const musicTracks: { value: MusicTrack; label: string }[] = [
+  { value: 'JINGLE_SOFT', label: 'Jingle bells — soft' },
+  { value: 'WINTER_PIANO', label: 'Winter piano' },
+  { value: 'LOFI_HOLIDAY', label: 'Lo-fi holiday' },
+  { value: 'MARKET_STRINGS', label: 'Christmas market strings' },
+];
+
+export type Volume = 'QUIET' | 'MEDIUM' | 'LOUD';
+
+export const volumeLabel: Record<Volume, string> = {
+  QUIET: 'Quiet',
+  MEDIUM: 'Medium',
+  LOUD: 'Loud',
+};
+
+/** The seven effects, in the order the tab lays them out (PRD 6.0). */
+export type ElementKey = 'falling' | 'decorations' | 'cursor' | 'bar' | 'skin' | 'moments' | 'music';
+
+export const elementKeys: ElementKey[] = [
+  'falling',
+  'decorations',
+  'cursor',
+  'bar',
+  'skin',
+  'moments',
+  'music',
+];
+
+export const elementLabel: Record<ElementKey, string> = {
+  falling: 'Falling effect',
+  decorations: 'Decorations',
+  cursor: 'Cursor effect',
+  bar: 'Announcement bar',
+  skin: 'Seasonal skin',
+  moments: 'Cart & thank-you moments',
+  music: 'Background music',
+};
