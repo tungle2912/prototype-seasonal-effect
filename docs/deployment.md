@@ -70,8 +70,10 @@ pnpm preview
 
 | Symptom | Cause |
 |---|---|
+| **Completely blank page**, and view-source shows `<script src="/src/main.tsx">` | Pages is serving the **repo root instead of `dist/`**. The browser cannot execute raw TypeScript. Source is still "Deploy from a branch" — set it to **GitHub Actions** (step 2 above) |
 | Blank page, 404s on `/assets/*` | `base` was changed away from `'./'` |
 | Deep link 404s on refresh | Router was switched to `BrowserRouter` |
+| Workflow fails on `pnpm/setup` | Do not also pass a `version:` input — the version comes from `packageManager` in package.json. And do not downgrade to `pnpm/action-setup@v4`, which does not support pnpm 11 |
 | Workflow fails on `pnpm install` | `pnpm-lock.yaml` is stale — run `pnpm install` and commit it |
 | `ERR_PNPM_IGNORED_BUILDS` | `allowBuilds` in `pnpm-workspace.yaml` was removed; esbuild needs its install script |
-| Pages shows the README instead of the app | Source is still "Deploy from a branch" — set it to GitHub Actions |
+| Actions run named "pages build and deployment" appears | That is GitHub's built-in branch builder, not this workflow. Its presence means the Pages source is still set to a branch |

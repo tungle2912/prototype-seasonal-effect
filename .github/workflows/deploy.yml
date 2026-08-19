@@ -25,14 +25,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      # pnpm/setup@v2, not pnpm/action-setup@v4: the older action does not
+      # support pnpm 11. The pnpm version is read from package.json's
+      # "packageManager" field, so it is never specified in two places.
+      - uses: pnpm/setup@v2
         with:
-          version: 11
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
+          runtime: node@22
+          cache: true
+          install: false
 
       - run: pnpm install --frozen-lockfile
 
