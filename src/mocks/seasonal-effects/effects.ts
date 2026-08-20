@@ -75,20 +75,30 @@ export const countdownStyles: { value: CountdownStyle; label: string }[] = [
   { value: 'LABELLED', label: 'Labelled' },
 ];
 
-export type Density = 'LIGHT' | 'MEDIUM' | 'DENSE';
+/**
+ * How much falling artwork is on screen, as a percentage of the most a page
+ * should ever carry. A percentage rather than three named steps: the gap between
+ * "light" and "medium" is a number the merchant can only judge by looking, so let
+ * them land anywhere on the scale instead of guessing which word means what.
+ */
+export type Density = number;
 
-/** Particle count at full quality. Speed guard scales these down (PRD 15.4). */
-export const densityParticles: Record<Density, number> = {
-  LIGHT: 24,
-  MEDIUM: 50,
-  DENSE: 90,
-};
+export const DENSITY_MIN = 10;
+export const DENSITY_MAX = 100;
+export const DENSITY_STEP = 5;
 
-export const densityLabel: Record<Density, string> = {
-  LIGHT: 'Light',
-  MEDIUM: 'Medium',
-  DENSE: 'Dense',
-};
+/** Particle count at 100%. Speed guard scales it down from here (PRD 15.4). */
+export const DENSITY_PARTICLES_MAX = 90;
+
+export const densityParticles = (density: Density): number =>
+  Math.max(1, Math.round((density / 100) * DENSITY_PARTICLES_MAX));
+
+/** The word for a reading, so a number never has to be interpreted alone. */
+export const densityBandLabel = (density: Density): string =>
+  density <= 30 ? 'Light' : density <= 70 ? 'Medium' : 'Dense';
+
+export const densityLabel = (density: Density): string =>
+  `${density}% · ${densityBandLabel(density).toLowerCase()}`;
 
 export type ParticleColour = 'STOCK' | 'BRAND';
 

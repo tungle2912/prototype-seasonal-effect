@@ -26,7 +26,7 @@ export function fallingSummary(campaign: Campaign): string {
   const { artwork, colour, density } = campaign.elements.falling;
   return dot(
     artworkLabel(artwork),
-    densityLabel[density].toLowerCase(),
+    densityLabel(density),
     particleColourLabel[colour].toLowerCase(),
   );
 }

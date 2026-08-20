@@ -18,6 +18,9 @@ import type { Campaign } from '../../../../mocks/seasonal-effects/campaigns';
 import {
   countdownStyles,
   decorationStyles,
+  DENSITY_MAX,
+  DENSITY_MIN,
+  DENSITY_STEP,
   densityLabel,
   fallingArtwork,
   musicTracks,
@@ -30,7 +33,6 @@ import {
   zeroBehaviourOptions,
   type CountdownStyle,
   type DecorationStyle,
-  type Density,
   type FallingArtwork,
   type ParticleColour,
   type TrailLength,
@@ -124,13 +126,16 @@ export function ElementsTab({ campaign, onChange, issues }: ElementsTabProps) {
           </BlockStack>
 
           {/* The grid stays open. A Change/Done button would put one extra click
-              in front of the thing merchants do first. */}
+              in front of the thing merchants do first.
+              Four across and eight to a page: three columns on a page this wide
+              drew a tile the size of a banner and ran four rows deep, which is
+              both ugly and the exact thing the two-row rule exists to stop. */}
           <TileGrid
             label="Occasion"
             labelHidden
             size="large"
-            columns={3}
-            perPage={12}
+            columns={4}
+            perPage={8}
             options={presets.map((preset) => ({
               value: preset.key,
               label: preset.label,
@@ -175,22 +180,30 @@ export function ElementsTab({ campaign, onChange, issues }: ElementsTabProps) {
               }
             />
 
-            <InlineGrid columns={{ xs: 1, md: 2 }} gap="400">
-              <Segmented<ParticleColour>
-                label="Colour"
-                options={optionsFrom(particleColourLabel, ['STOCK', 'BRAND'])}
-                value={falling.colour}
-                onChange={(next) => patch('falling', { colour: next })}
-                fullWidth
-              />
-              <Segmented<Density>
-                label="Density"
-                options={optionsFrom(densityLabel, ['LIGHT', 'MEDIUM', 'DENSE'])}
-                value={falling.density}
-                onChange={(next) => patch('falling', { density: next })}
-                fullWidth
-              />
-            </InlineGrid>
+            <Segmented<ParticleColour>
+              label="Colour"
+              options={optionsFrom(particleColourLabel, ['STOCK', 'BRAND'])}
+              value={falling.colour}
+              onChange={(next) => patch('falling', { colour: next })}
+            />
+
+            {/* A percentage, not three named steps: density is a scale, and
+                dragging it while the snow is on screen beside you is the whole
+                reason the preview is there. The reading carries the word too, so
+                45% does not have to be interpreted on its own.
+                On its own row rather than half of a two-column grid: a slider is
+                a track two pixels tall next to a control four times its height,
+                and pairing them left the row looking broken. Width is also what a
+                slider is for — the longer the track, the finer the drag. */}
+            <SliderField
+              label="Density"
+              value={falling.density}
+              min={DENSITY_MIN}
+              max={DENSITY_MAX}
+              step={DENSITY_STEP}
+              valueLabel={densityLabel(falling.density)}
+              onChange={(density) => patch('falling', { density })}
+            />
 
             <Text as="p" variant="bodySm" tone="subdued">
               The effect layer never blocks a click, and the real particle count drops on a slow
@@ -342,24 +355,25 @@ export function ElementsTab({ campaign, onChange, issues }: ElementsTabProps) {
           onOpenChange={(next) => toggleOpen('music', next)}
         >
           <BlockStack gap="400">
-            <InlineGrid columns={{ xs: 1, md: 2 }} gap="400">
+            <Box maxWidth="20rem">
               <Select
                 label="Track"
                 options={musicTracks.map((track) => ({ label: track.label, value: track.value }))}
                 value={music.track}
                 onChange={(next) => patch('music', { track: next as typeof music.track })}
               />
-              <SliderField
-                label="Volume"
-                value={music.volume}
-                min={VOLUME_MIN}
-                max={VOLUME_MAX}
-                step={VOLUME_STEP}
-                valueLabel={music.volume === 0 ? 'Muted' : `${music.volume}%`}
-                helpText={`${volumeBandLabel(music.volume)} — a shopper can still mute it from the storefront.`}
-                onChange={(volume) => patch('music', { volume })}
-              />
-            </InlineGrid>
+            </Box>
+
+            <SliderField
+              label="Volume"
+              value={music.volume}
+              min={VOLUME_MIN}
+              max={VOLUME_MAX}
+              step={VOLUME_STEP}
+              valueLabel={music.volume === 0 ? 'Muted' : `${music.volume}%`}
+              helpText={`${volumeBandLabel(music.volume)} — a shopper can still mute it from the storefront.`}
+              onChange={(volume) => patch('music', { volume })}
+            />
 
             <Checkbox
               label="Wait for a click before playing"

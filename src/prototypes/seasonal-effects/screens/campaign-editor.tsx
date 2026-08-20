@@ -126,7 +126,6 @@ export function CampaignEditorScreen() {
   if (loading) {
     return (
       <Page
-        fullWidth
         title="Campaign"
         backAction={{ content: 'Campaigns', onAction: () => goTo('CAMPAIGNS') }}
       >
@@ -217,7 +216,6 @@ export function CampaignEditorScreen() {
       ) : null}
 
       <Page
-        fullWidth
         backAction={{ content: 'Campaigns', onAction: () => goTo('CAMPAIGNS') }}
         title={draft.name.trim() || 'Untitled campaign'}
         subtitle={subtitle}
@@ -264,9 +262,10 @@ export function CampaignEditorScreen() {
         {/* `InlineGrid`, not `Layout`: Polaris' flex row aligns its columns to
             `flex-start`, so the rail is only as tall as the preview and a sticky
             child inside it has nowhere to travel. Grid items stretch, which is
-            what makes the preview actually stay put. The rail is a fixed 22.5rem
-            — the width of a phone — and the editor takes everything else. */}
-        <InlineGrid columns={{ xs: 1, lg: 'minmax(0, 1fr) 22.5rem' }} gap="400">
+            what makes the preview actually stay put. Two-thirds / one-third, the
+            same split `Layout` would have given — the page is not full width, so
+            the editor is a column and not a field stretched across a monitor. */}
+        <InlineGrid columns={{ xs: 1, lg: ['twoThirds', 'oneThird'] }} gap="400">
           <div>
             <BlockStack gap="400">
               {!embed.enabled ? (

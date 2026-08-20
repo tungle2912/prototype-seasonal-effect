@@ -102,7 +102,6 @@ export function ScrollToTopScreen() {
 
   return (
     <Page
-      fullWidth
       backAction={{ content: 'Home', onAction: () => goTo('HOME') }}
       title="Scroll to top"
       subtitle="A button on every page of your store, all year — it does not expire with a holiday"
@@ -115,7 +114,7 @@ export function ScrollToTopScreen() {
       {/* `InlineGrid`, not `Layout`: grid items stretch to the row height, and
           without that the preview rail is only as tall as the preview itself —
           which leaves `position: sticky` nothing to stick to. */}
-      <InlineGrid columns={{ xs: 1, lg: 'minmax(0, 1fr) 24rem' }} gap="400">
+      <InlineGrid columns={{ xs: 1, lg: ['twoThirds', 'oneThird'] }} gap="400">
         <div>
           {loading ? (
             <Card>
@@ -304,17 +303,7 @@ export function ScrollToTopScreen() {
                   </Text>
                   <Divider />
 
-                  <InlineGrid columns={{ xs: 1, md: 2 }} gap="400">
-                    {/* A slider, not a number field: nobody knows what 4px of border
-                        looks like until they see it, and dragging shows them. */}
-                    <SliderField
-                      label="Width"
-                      value={scrollToTop.borderWidth}
-                      min={0}
-                      max={10}
-                      valueLabel={`${scrollToTop.borderWidth}px`}
-                      onChange={(borderWidth) => setScrollToTop({ borderWidth })}
-                    />
+                  <Box maxWidth="20rem">
                     <Select
                       label="Style"
                       options={optionsFrom(BORDER_STYLE_LABEL, [
@@ -326,7 +315,20 @@ export function ScrollToTopScreen() {
                       value={scrollToTop.borderStyle}
                       onChange={(next) => setScrollToTop({ borderStyle: next as BorderStyle })}
                     />
-                  </InlineGrid>
+                  </Box>
+
+                  {/* A slider, not a number field: nobody knows what 4px of border
+                      looks like until they see it, and dragging shows them. It gets
+                      its own row — a track is far shorter than a select, and the two
+                      side by side never lined up. */}
+                  <SliderField
+                    label="Width"
+                    value={scrollToTop.borderWidth}
+                    min={0}
+                    max={10}
+                    valueLabel={`${scrollToTop.borderWidth}px`}
+                    onChange={(borderWidth) => setScrollToTop({ borderWidth })}
+                  />
 
                   <InlineGrid columns={{ xs: 1, md: 2 }} gap="400">
                     <ColorField

@@ -184,7 +184,7 @@ export function EffectsCanvas({
       const current = settings.current;
 
       if (current.fallingEnabled) {
-        resize(densityParticles[current.density]);
+        resize(densityParticles(current.density));
         const glyph = artworkGlyph(current.artwork);
         const useBrand = current.colour === 'BRAND';
 

@@ -196,7 +196,7 @@ export function elementsFromPreset(key: PresetKey): CampaignElements {
       enabled: preset.enabled.falling,
       artwork: preset.artwork,
       colour: 'STOCK',
-      density: 'MEDIUM',
+      density: 55,
     },
     decorations: { enabled: preset.enabled.decorations, style: preset.decoration },
     cursor: { enabled: preset.enabled.cursor, particles: 'MATCH_FALLING', length: 'MEDIUM' },

@@ -84,7 +84,8 @@ export function CampaignsScreen() {
   const [embedModalOpen, setEmbedModalOpen] = useState(false);
 
   const rows = useMemo(
-    () => sortCampaigns(filterCampaigns(campaigns, tab, query), sortSelected[0] ?? 'updatedAt desc'),
+    () =>
+      sortCampaigns(filterCampaigns(campaigns, tab, query), sortSelected[0] ?? 'updatedAt desc'),
     [campaigns, tab, query, sortSelected],
   );
 
@@ -126,11 +127,7 @@ export function CampaignsScreen() {
 
   if (error) {
     return (
-      <Page
-        fullWidth
-        title="Campaigns"
-        backAction={{ content: 'Home', onAction: () => goTo('HOME') }}
-      >
+      <Page title="Campaigns" backAction={{ content: 'Home', onAction: () => goTo('HOME') }}>
         <Layout>
           <Layout.Section>
             <Banner
@@ -148,7 +145,6 @@ export function CampaignsScreen() {
 
   return (
     <Page
-      fullWidth
       backAction={{ content: 'Home', onAction: () => goTo('HOME') }}
       title="Campaigns"
       primaryAction={{ content: 'Create campaign', onAction: createCampaign }}
@@ -174,8 +170,8 @@ export function CampaignsScreen() {
                 action={{ content: 'Turn it on', onAction: () => setEmbedModalOpen(true) }}
               >
                 <p>
-                  The app embed is off, so every campaign below is inactive no matter what its status
-                  says.
+                  The app embed is off, so every campaign below is inactive no matter what its
+                  status says.
                 </p>
               </Banner>
             ) : null}
@@ -264,7 +260,10 @@ export function CampaignsScreen() {
                     },
                   ]}
                   bulkActions={[
-                    { content: 'Duplicate', onAction: () => runBulk('DUPLICATE', selectedResources) },
+                    {
+                      content: 'Duplicate',
+                      onAction: () => runBulk('DUPLICATE', selectedResources),
+                    },
                     {
                       items: [
                         {
@@ -393,9 +392,7 @@ function CampaignRow({
       </IndexTable.Cell>
 
       <IndexTable.Cell>
-        <Badge tone={statusTone[status]}>
-          {statusLabel[status]}
-        </Badge>
+        <Badge tone={statusTone[status]}>{statusLabel[status]}</Badge>
       </IndexTable.Cell>
 
       <IndexTable.Cell>
@@ -470,7 +467,9 @@ function DeleteConfirmModal({
                 <Text as="span" fontWeight="semibold">
                   {campaign.name || 'Untitled campaign'}
                 </Text>
-                <Badge tone={statusTone[statusOf(campaign)]}>{statusLabel[statusOf(campaign)]}</Badge>
+                <Badge tone={statusTone[statusOf(campaign)]}>
+                  {statusLabel[statusOf(campaign)]}
+                </Badge>
               </InlineStack>
             ))}
           </BlockStack>

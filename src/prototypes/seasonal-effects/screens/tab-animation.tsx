@@ -110,7 +110,6 @@ export function TabAnimationScreen() {
 
   return (
     <Page
-      fullWidth
       backAction={{ content: 'Home', onAction: () => goTo('HOME') }}
       title="Tab animation"
       subtitle="Changes the browser tab title and favicon while a shopper is looking at another tab"
@@ -123,7 +122,7 @@ export function TabAnimationScreen() {
       {/* `InlineGrid`, not `Layout`: grid items stretch to the row height, and
           without that the preview rail is only as tall as the preview itself —
           which leaves `position: sticky` nothing to stick to. */}
-      <InlineGrid columns={{ xs: 1, lg: 'minmax(0, 1fr) 24rem' }} gap="400">
+      <InlineGrid columns={{ xs: 1, lg: ['twoThirds', 'oneThird'] }} gap="400">
         <div>
           {loading ? (
             <Card>
