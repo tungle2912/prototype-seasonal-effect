@@ -21,7 +21,6 @@ import type {
   MusicTrack,
   ParticleColour,
   TrailLength,
-  Volume,
 } from './effects';
 import { presetByKey, type PresetKey } from './presets';
 import { TODAY_ISO } from './today';
@@ -120,7 +119,8 @@ export interface CampaignElements {
   music: {
     enabled: boolean;
     track: MusicTrack;
-    volume: Volume;
+    /** 0–100 percent (PRD 6.7). */
+    volume: number;
     waitForClick: boolean;
   };
 }
@@ -221,7 +221,7 @@ export function elementsFromPreset(key: PresetKey): CampaignElements {
     music: {
       enabled: preset.enabled.music,
       track: 'JINGLE_SOFT',
-      volume: 'QUIET',
+      volume: 25,
       waitForClick: true,
     },
   };

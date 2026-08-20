@@ -123,13 +123,25 @@ export const musicTracks: { value: MusicTrack; label: string }[] = [
   { value: 'MARKET_STRINGS', label: 'Christmas market strings' },
 ];
 
-export type Volume = 'QUIET' | 'MEDIUM' | 'LOUD';
+/**
+ * Volume is a quantity, not three named buckets, so it is a percentage on a
+ * slider. `Quiet · Medium · Loud` made the merchant guess what the gap between
+ * two of them sounded like, and gave them no way to land between two guesses.
+ */
+export const VOLUME_MIN = 0;
+export const VOLUME_MAX = 100;
+export const VOLUME_STEP = 5;
 
-export const volumeLabel: Record<Volume, string> = {
-  QUIET: 'Quiet',
-  MEDIUM: 'Medium',
-  LOUD: 'Loud',
+/** The band a percentage falls in — still worth saying, next to the number. */
+export const volumeBandLabel = (volume: number): string => {
+  if (volume === 0) return 'Muted';
+  if (volume <= 33) return 'Quiet';
+  if (volume <= 66) return 'Medium';
+  return 'Loud';
 };
+
+export const volumeLabel = (volume: number): string =>
+  volume === 0 ? 'Muted' : `${volume}% · ${volumeBandLabel(volume).toLowerCase()}`;
 
 /** The seven effects, in the order the tab lays them out (PRD 6.0). */
 export type ElementKey = 'falling' | 'decorations' | 'cursor' | 'bar' | 'skin' | 'moments' | 'music';

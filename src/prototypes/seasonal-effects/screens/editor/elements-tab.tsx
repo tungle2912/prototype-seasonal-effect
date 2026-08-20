@@ -23,7 +23,10 @@ import {
   musicTracks,
   particleColourLabel,
   trailLabel,
-  volumeLabel,
+  volumeBandLabel,
+  VOLUME_MAX,
+  VOLUME_MIN,
+  VOLUME_STEP,
   zeroBehaviourOptions,
   type CountdownStyle,
   type DecorationStyle,
@@ -31,7 +34,6 @@ import {
   type FallingArtwork,
   type ParticleColour,
   type TrailLength,
-  type Volume,
 } from '../../../../mocks/seasonal-effects/effects';
 import { paletteById, seasonalPalettes } from '../../../../mocks/seasonal-effects/palettes';
 import { presets, type PresetKey } from '../../../../mocks/seasonal-effects/presets';
@@ -47,6 +49,7 @@ import {
   PresetTile,
 } from '../../components/preview/tile-previews';
 import { Segmented } from '../../components/segmented';
+import { SliderField } from '../../components/slider-field';
 import { TileGrid } from '../../components/tile-grid';
 import { useApp } from '../../state/app-state';
 import { applyPreset, PRESET_OVERWRITE_NOTE } from '../../state/preset';
@@ -347,7 +350,7 @@ export function ElementsTab({ campaign, onChange, issues }: ElementsTabProps) {
             />
             <Checkbox
               label="Order confirmed"
-              helpText="On the thank-you page, for at most three seconds."
+              helpText="On the thank-you page, for at most three seconds. The preview cannot show it — that page belongs to checkout."
               checked={moments.orderConfirmed}
               onChange={(next) => patch('moments', { orderConfirmed: next })}
             />
@@ -377,12 +380,15 @@ export function ElementsTab({ campaign, onChange, issues }: ElementsTabProps) {
                 value={music.track}
                 onChange={(next) => patch('music', { track: next as typeof music.track })}
               />
-              <Segmented<Volume>
+              <SliderField
                 label="Volume"
-                options={optionsFrom(volumeLabel, ['QUIET', 'MEDIUM', 'LOUD'])}
                 value={music.volume}
-                onChange={(next) => patch('music', { volume: next })}
-                fullWidth
+                min={VOLUME_MIN}
+                max={VOLUME_MAX}
+                step={VOLUME_STEP}
+                valueLabel={music.volume === 0 ? 'Muted' : `${music.volume}%`}
+                helpText={`${volumeBandLabel(music.volume)} — a shopper can still mute it from the storefront.`}
+                onChange={(volume) => patch('music', { volume })}
               />
             </InlineGrid>
 
@@ -551,6 +557,9 @@ function BarSettings({
             </div>
           </InlineGrid>
 
+          {/* Compact: a countdown is a strip of digits, so a tall tile spent most
+              of its height on empty background and pushed the rest of the bar
+              settings off the screen. */}
           <TileGrid
             label="Countdown style"
             options={countdownStyles.map((style) => ({
@@ -561,6 +570,7 @@ function BarSettings({
             value={bar.style}
             columns={2}
             perPage={4}
+            size="compact"
             onChange={(next) => patchBar({ style: next as CountdownStyle })}
           />
 

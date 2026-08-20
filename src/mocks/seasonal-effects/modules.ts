@@ -12,14 +12,14 @@ import { brandColoursFromTheme, scrollButtonDefaults } from './palettes';
 
 export type FaviconMode = 'EMOJI' | 'SITE_FAVICON';
 export type TabAnimationStyle = 'BLINKING' | 'SCROLLING' | 'TYPING';
-export type AnimationSpeed = 'SLOW' | 'NORMAL' | 'FAST';
 
 export interface TabAnimationSettings {
   enabled: boolean;
   faviconMode: FaviconMode;
   emoji: string;
   style: TabAnimationStyle;
-  speed: AnimationSpeed;
+  /** 1–5 on the speed slider. 3 is the animation running at its designed pace. */
+  speed: number;
   /** 1 to 5 messages, 30 characters each. Never zero — a module needs something to run. */
   messages: string[];
 }
@@ -27,18 +27,24 @@ export interface TabAnimationSettings {
 export const TAB_MESSAGE_LIMIT = 5;
 export const TAB_MESSAGE_LENGTH = 30;
 
-/** Multiplies every delay in the animation. */
-export const speedFactor: Record<AnimationSpeed, number> = {
-  SLOW: 1.6,
-  NORMAL: 1,
-  FAST: 0.62,
-};
+/**
+ * Speed is one continuous thing — how long the animation waits between beats —
+ * so it is a slider with five stops rather than three buttons. Level 3 is the
+ * pace the animation was designed at; each step either side scales every delay.
+ */
+export const SPEED_MIN = 1;
+export const SPEED_MAX = 5;
 
-export const speedLabel: Record<AnimationSpeed, string> = {
-  SLOW: 'Slow',
-  NORMAL: 'Normal',
-  FAST: 'Fast',
-};
+const SPEED_FACTORS = [1.9, 1.4, 1, 0.72, 0.5];
+
+/** Multiplies every delay in the animation. */
+export const speedFactor = (level: number): number =>
+  SPEED_FACTORS[Math.min(SPEED_MAX, Math.max(SPEED_MIN, Math.round(level))) - 1] ?? 1;
+
+const SPEED_LABELS = ['Slowest', 'Slow', 'Normal', 'Fast', 'Fastest'];
+
+export const speedLabel = (level: number): string =>
+  SPEED_LABELS[Math.min(SPEED_MAX, Math.max(SPEED_MIN, Math.round(level))) - 1] ?? 'Normal';
 
 export const tabAnimationHint: Record<TabAnimationStyle, string> = {
   BLINKING:
@@ -63,7 +69,7 @@ export const tabAnimationDefaults: TabAnimationSettings = {
   faviconMode: 'EMOJI',
   emoji: '😎',
   style: 'BLINKING',
-  speed: 'NORMAL',
+  speed: 3,
   messages: ['COME BACK !!! 😎', 'PLS don’t go 😎'],
 };
 

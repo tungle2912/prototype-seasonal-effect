@@ -35,8 +35,12 @@ interface TileGridProps {
   labelHidden?: boolean;
   /** Icon tiles are square and captionless; preview tiles carry a label. */
   variant?: 'preview' | 'icon';
-  /** Taller tiles with larger type, for the one grid a merchant reads first. */
-  size?: 'default' | 'large';
+  /**
+   * `large` for the one grid a merchant reads first, `compact` for an option
+   * that is a strip rather than a scene — a countdown is three numbers wide and
+   * a tall tile would spend its height on empty background.
+   */
+  size?: 'default' | 'large' | 'compact';
   /** Custom artwork is a paid-plan feature, so the button is present but explains itself. */
   onUpload?: () => void;
   disabled?: boolean;
@@ -119,7 +123,14 @@ export function TileGrid({
                   display: 'block',
                   // Large tiles are wider than tall: the label is what got bigger,
                   // and 12 of them at 16/9 would push the effects off the screen.
-                  aspectRatio: variant === 'icon' ? '1 / 1' : size === 'large' ? '2.4 / 1' : '4 / 3',
+                  aspectRatio:
+                    variant === 'icon'
+                      ? '1 / 1'
+                      : size === 'large'
+                        ? '2.4 / 1'
+                        : size === 'compact'
+                          ? '5 / 1'
+                          : '4 / 3',
                   overflow: 'hidden',
                   color: 'var(--p-color-text)',
                 }}
@@ -134,7 +145,9 @@ export function TileGrid({
                     padding:
                       size === 'large'
                         ? 'var(--p-space-200) var(--p-space-300)'
-                        : 'var(--p-space-150) var(--p-space-200)',
+                        : size === 'compact'
+                          ? 'var(--p-space-100) var(--p-space-200)'
+                          : 'var(--p-space-150) var(--p-space-200)',
                     borderTop: 'var(--p-border-width-025) solid var(--p-color-border-secondary)',
                     textAlign: 'left',
                   }}
@@ -143,7 +156,11 @@ export function TileGrid({
                     style={{
                       display: 'block',
                       fontSize:
-                        size === 'large' ? 'var(--p-font-size-350)' : 'var(--p-font-size-325)',
+                        size === 'large'
+                          ? 'var(--p-font-size-350)'
+                          : size === 'compact'
+                            ? 'var(--p-font-size-300)'
+                            : 'var(--p-font-size-325)',
                       lineHeight: 'var(--p-font-line-height-400)',
                       fontWeight: selected ? 650 : 550,
                       color: 'var(--p-color-text)',

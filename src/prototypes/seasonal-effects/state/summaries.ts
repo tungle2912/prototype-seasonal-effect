@@ -74,7 +74,7 @@ export function musicSummary(campaign: Campaign): string {
   const track = musicTracks.find((option) => option.value === music.track)?.label;
   return dot(
     track,
-    volumeLabel[music.volume].toLowerCase(),
+    volumeLabel(music.volume).toLowerCase(),
     music.waitForClick ? 'waits for a click' : 'starts on its own',
   );
 }

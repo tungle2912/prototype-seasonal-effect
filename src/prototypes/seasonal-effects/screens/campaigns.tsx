@@ -65,6 +65,7 @@ export function CampaignsScreen() {
     loading,
     error,
     embed,
+    goTo,
     openEditor,
     createCampaign,
     setEnabled,
@@ -125,7 +126,11 @@ export function CampaignsScreen() {
 
   if (error) {
     return (
-      <Page fullWidth title="Campaigns">
+      <Page
+        fullWidth
+        title="Campaigns"
+        backAction={{ content: 'Home', onAction: () => goTo('HOME') }}
+      >
         <Layout>
           <Layout.Section>
             <Banner
@@ -144,6 +149,7 @@ export function CampaignsScreen() {
   return (
     <Page
       fullWidth
+      backAction={{ content: 'Home', onAction: () => goTo('HOME') }}
       title="Campaigns"
       primaryAction={{ content: 'Create campaign', onAction: createCampaign }}
       secondaryActions={

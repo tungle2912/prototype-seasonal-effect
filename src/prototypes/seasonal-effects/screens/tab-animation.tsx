@@ -25,19 +25,19 @@ import {
 import { useState } from 'react';
 
 import {
+  SPEED_MAX,
+  SPEED_MIN,
   speedLabel,
   TAB_MESSAGE_LENGTH,
   TAB_MESSAGE_LIMIT,
-  type AnimationSpeed,
   type FaviconMode,
   type TabAnimationStyle,
 } from '../../../mocks/seasonal-effects/modules';
 import { CardToggle } from '../components/card-toggle';
 import { ChoiceCards } from '../components/choice-cards';
 import { EmojiPickerModal } from '../components/emoji-picker-modal';
-import { optionsFrom } from '../components/options';
 import { BrowserTabPreview } from '../components/preview/browser-tab-preview';
-import { Segmented } from '../components/segmented';
+import { SliderField } from '../components/slider-field';
 import { StickyPreview } from '../components/sticky-preview';
 import { useApp } from '../state/app-state';
 
@@ -77,7 +77,7 @@ const ANIMATION_CHOICES = [
 ];
 
 export function TabAnimationScreen() {
-  const { tabAnimation, setTabAnimation, loading, error, embed, showToast } = useApp();
+  const { tabAnimation, setTabAnimation, loading, error, embed, goTo, showToast } = useApp();
   const [emojiTarget, setEmojiTarget] = useState<'FAVICON' | number | null>(null);
 
   const written = tabAnimation.messages.filter((message) => message.trim().length > 0);
@@ -91,7 +91,7 @@ export function TabAnimationScreen() {
 
   if (error) {
     return (
-      <Page title="Tab animation">
+      <Page title="Tab animation" backAction={{ content: 'Home', onAction: () => goTo('HOME') }}>
         <Layout>
           <Layout.Section>
             <Banner
@@ -110,6 +110,7 @@ export function TabAnimationScreen() {
   return (
     <Page
       fullWidth
+      backAction={{ content: 'Home', onAction: () => goTo('HOME') }}
       title="Tab animation"
       subtitle="Changes the browser tab title and favicon while a shopper is looking at another tab"
       titleMetadata={
@@ -119,7 +120,9 @@ export function TabAnimationScreen() {
       }
     >
       <Layout>
-        <Layout.Section variant="oneHalf">
+        {/* Primary section plus a one-third rail: the settings are what the merchant
+            works in, and a browser tab is a small thing to draw. */}
+        <Layout.Section>
           {loading ? (
             <Card>
               <SkeletonBodyText lines={10} />
@@ -218,11 +221,14 @@ export function TabAnimationScreen() {
                     onChange={(next) => setTabAnimation({ style: next })}
                   />
 
-                  <Segmented<AnimationSpeed>
+                  <SliderField
                     label="Speed"
-                    options={optionsFrom(speedLabel, ['SLOW', 'NORMAL', 'FAST'])}
                     value={tabAnimation.speed}
-                    onChange={(next) => setTabAnimation({ speed: next })}
+                    min={SPEED_MIN}
+                    max={SPEED_MAX}
+                    valueLabel={speedLabel(tabAnimation.speed)}
+                    helpText="Drag it and watch the preview — how fast is too fast is a judgement, not a value you can type."
+                    onChange={(speed) => setTabAnimation({ speed })}
                   />
                 </BlockStack>
               </Card>
@@ -333,7 +339,7 @@ export function TabAnimationScreen() {
           )}
         </Layout.Section>
 
-        <Layout.Section variant="oneHalf">
+        <Layout.Section variant="oneThird">
           <StickyPreview>
             <Card>
               <BlockStack gap="300">

@@ -54,6 +54,7 @@ export function SettingsScreen() {
     tabAnimation,
     scrollToTop,
     killAll,
+    goTo,
     loading,
     error,
     showToast,
@@ -76,7 +77,7 @@ export function SettingsScreen() {
 
   if (error) {
     return (
-      <Page title="Settings">
+      <Page title="Settings" backAction={{ content: 'Home', onAction: () => goTo('HOME') }}>
         <Layout>
           <Layout.Section>
             <Banner
@@ -94,7 +95,7 @@ export function SettingsScreen() {
 
   if (loading) {
     return (
-      <Page title="Settings">
+      <Page title="Settings" backAction={{ content: 'Home', onAction: () => goTo('HOME') }}>
         <Layout>
           <Layout.Section>
             <Card>
@@ -108,6 +109,7 @@ export function SettingsScreen() {
 
   return (
     <Page
+      backAction={{ content: 'Home', onAction: () => goTo('HOME') }}
       title="Settings"
       subtitle="Applies to the whole store, not to a single campaign"
     >

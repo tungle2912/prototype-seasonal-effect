@@ -43,6 +43,7 @@ import { optionsFrom } from '../components/options';
 import { ScrollIconTile } from '../components/preview/tile-previews';
 import { ScrollPreview } from '../components/preview/scroll-preview';
 import { Segmented } from '../components/segmented';
+import { SliderField } from '../components/slider-field';
 import { ChoiceCards } from '../components/choice-cards';
 import { StickyPreview } from '../components/sticky-preview';
 import { ToggleRow } from '../components/toggle-row';
@@ -68,7 +69,8 @@ const BORDER_STYLE_LABEL: Record<BorderStyle, string> = {
 };
 
 export function ScrollToTopScreen() {
-  const { scrollToTop, setScrollToTop, campaigns, loading, error, embed, showToast } = useApp();
+  const { scrollToTop, setScrollToTop, campaigns, loading, error, embed, goTo, showToast } =
+    useApp();
 
   // A live campaign with its skin on takes the button's colours over, and the
   // merchant has to be told, or they will think their colour picker is broken.
@@ -82,7 +84,7 @@ export function ScrollToTopScreen() {
 
   if (error) {
     return (
-      <Page title="Scroll to top">
+      <Page title="Scroll to top" backAction={{ content: 'Home', onAction: () => goTo('HOME') }}>
         <Layout>
           <Layout.Section>
             <Banner
@@ -101,6 +103,7 @@ export function ScrollToTopScreen() {
   return (
     <Page
       fullWidth
+      backAction={{ content: 'Home', onAction: () => goTo('HOME') }}
       title="Scroll to top"
       subtitle="A button on every page of your store, all year — it does not expire with a holiday"
       titleMetadata={
@@ -110,7 +113,9 @@ export function ScrollToTopScreen() {
       }
     >
       <Layout>
-        <Layout.Section variant="oneHalf">
+        {/* Primary section plus a one-third rail, not two halves: this screen is a
+            long form and the preview is one button on a page. */}
+        <Layout.Section>
           {loading ? (
             <Card>
               <SkeletonBodyText lines={10} />
@@ -295,15 +300,15 @@ export function ScrollToTopScreen() {
                   <Divider />
 
                   <InlineGrid columns={{ xs: 1, md: 2 }} gap="400">
-                    <TextField
+                    {/* A slider, not a number field: nobody knows what 4px of border
+                        looks like until they see it, and dragging shows them. */}
+                    <SliderField
                       label="Width"
-                      type="number"
+                      value={scrollToTop.borderWidth}
                       min={0}
                       max={10}
-                      suffix="px"
-                      value={String(scrollToTop.borderWidth)}
-                      autoComplete="off"
-                      onChange={(next) => setScrollToTop({ borderWidth: Number(next) || 0 })}
+                      valueLabel={`${scrollToTop.borderWidth}px`}
+                      onChange={(borderWidth) => setScrollToTop({ borderWidth })}
                     />
                     <Select
                       label="Style"
@@ -393,25 +398,23 @@ export function ScrollToTopScreen() {
                   </InlineGrid>
 
                   <InlineGrid columns={{ xs: 1, md: 2 }} gap="400">
-                    <TextField
+                    <SliderField
                       label="Side offset"
-                      type="number"
+                      value={scrollToTop.offsetX}
                       min={0}
                       max={80}
-                      suffix="px"
-                      value={String(scrollToTop.offsetX)}
-                      autoComplete="off"
-                      onChange={(next) => setScrollToTop({ offsetX: Number(next) || 0 })}
+                      step={2}
+                      valueLabel={`${scrollToTop.offsetX}px`}
+                      onChange={(offsetX) => setScrollToTop({ offsetX })}
                     />
-                    <TextField
+                    <SliderField
                       label="Bottom offset"
-                      type="number"
+                      value={scrollToTop.offsetY}
                       min={0}
                       max={80}
-                      suffix="px"
-                      value={String(scrollToTop.offsetY)}
-                      autoComplete="off"
-                      onChange={(next) => setScrollToTop({ offsetY: Number(next) || 0 })}
+                      step={2}
+                      valueLabel={`${scrollToTop.offsetY}px`}
+                      onChange={(offsetY) => setScrollToTop({ offsetY })}
                     />
                   </InlineGrid>
 
@@ -432,7 +435,7 @@ export function ScrollToTopScreen() {
           )}
         </Layout.Section>
 
-        <Layout.Section variant="oneHalf">
+        <Layout.Section variant="oneThird">
           <StickyPreview>
             <Card>
               <BlockStack gap="300">

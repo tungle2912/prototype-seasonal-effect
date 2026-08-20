@@ -59,7 +59,7 @@ export function BrowserTabPreview({ settings }: BrowserTabPreviewProps) {
     let timer = 0;
     let index = 0;
     let step = 0;
-    const factor = speedFactor[settings.speed];
+    const factor = speedFactor(settings.speed);
     const wait = (ms: number) => Math.round(ms * factor);
 
     const tick = () => {

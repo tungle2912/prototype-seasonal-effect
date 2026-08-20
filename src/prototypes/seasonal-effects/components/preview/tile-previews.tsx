@@ -167,30 +167,47 @@ export function DecorationTile({ style }: { style: DecorationStyle }) {
   return <>{DECORATION_ART[style]}</>;
 }
 
-/** The countdown styles, drawn the way the digits will actually appear on the bar. */
+/**
+ * The countdown styles, drawn the way the digits will actually appear on the bar.
+ *
+ * On a light strip rather than the near-black block this used to be: four solid
+ * dark tiles in a row read as a warning, and the thing being chosen here is the
+ * *shape* of the digits — which shows better against a quiet background than
+ * against a colour competing with the announcement bar it will really sit on.
+ */
 export function CountdownTile({ style }: { style: CountdownStyle }) {
   const shell: React.CSSProperties = {
     ...fill,
     display: 'grid',
     placeItems: 'center',
-    background: '#1f1f1f',
-    color: '#ffffff',
+    background: '#f2f3f5',
+    color: '#31333a',
     fontSize: '10px',
+    fontWeight: 600,
     letterSpacing: '.02em',
+  };
+
+  const chip: React.CSSProperties = {
+    background: '#ffffff',
+    border: '1px solid #d5d8dd',
+    borderRadius: '3px',
+    padding: '2px 4px',
   };
 
   if (style === 'PILL') {
     return (
       <span style={shell}>
-        <span style={{ background: 'rgba(255,255,255,.18)', borderRadius: '999px', padding: '3px 9px' }}>
-          02 : 14 : 33
-        </span>
+        <span style={{ ...chip, borderRadius: '999px', padding: '3px 10px' }}>02 : 14 : 33</span>
       </span>
     );
   }
 
   if (style === 'PLAIN') {
-    return <span style={shell}>ends in 2h 14m 33s</span>;
+    return (
+      <span style={shell}>
+        <span style={{ fontWeight: 500 }}>ends in 2h 14m 33s</span>
+      </span>
+    );
   }
 
   if (style === 'DIGIT_BOXES') {
@@ -198,10 +215,7 @@ export function CountdownTile({ style }: { style: CountdownStyle }) {
       <span style={shell}>
         <span style={{ display: 'flex', gap: '3px' }}>
           {['02', '14', '33'].map((value) => (
-            <span
-              key={value}
-              style={{ background: 'rgba(255,255,255,.18)', borderRadius: '3px', padding: '3px 4px' }}
-            >
+            <span key={value} style={chip}>
               {value}
             </span>
           ))}
@@ -219,10 +233,8 @@ export function CountdownTile({ style }: { style: CountdownStyle }) {
           ['33', 'sec'],
         ].map(([value, unit]) => (
           <span key={unit} style={{ display: 'grid', justifyItems: 'center', gap: '1px' }}>
-            <span style={{ background: 'rgba(255,255,255,.18)', borderRadius: '3px', padding: '2px 4px' }}>
-              {value}
-            </span>
-            <span style={{ fontSize: '6px', opacity: 0.7 }}>{unit}</span>
+            <span style={chip}>{value}</span>
+            <span style={{ fontSize: '6px', fontWeight: 500, color: '#6b6f76' }}>{unit}</span>
           </span>
         ))}
       </span>

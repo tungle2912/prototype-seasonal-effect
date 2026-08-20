@@ -37,7 +37,9 @@ import { TargetingTab } from './editor/targeting-tab';
  * The campaign editor.
  *
  * Two-column, because Built for Shopify asks visual editors for exactly that: the
- * merchant edits on the left and watches the result on the right. The preview lives
+ * merchant edits on the left and watches the result on the right. The split is
+ * Polaris' primary section plus a one-third rail rather than two halves — the
+ * editor is where the work happens, and the preview is a phone. The preview lives
  * outside the tabs and never remounts when they switch, so the snow does not restart
  * every time they go to check the schedule.
  *
@@ -121,12 +123,12 @@ export function CampaignEditorScreen() {
         backAction={{ content: 'Campaigns', onAction: () => goTo('CAMPAIGNS') }}
       >
         <Layout>
-          <Layout.Section variant="oneHalf">
+          <Layout.Section>
             <Card>
               <SkeletonBodyText lines={10} />
             </Card>
           </Layout.Section>
-          <Layout.Section variant="oneHalf">
+          <Layout.Section variant="oneThird">
             <Card>
               <SkeletonBodyText lines={10} />
             </Card>
@@ -253,7 +255,10 @@ export function CampaignEditorScreen() {
         ]}
       >
         <Layout>
-          <Layout.Section variant="oneHalf">
+          {/* Polaris' own two-column split, not a 50/50 one: the editor is the
+              primary section and the preview rides in the one-third rail beside
+              it. A form and a phone-sized preview do not deserve equal width. */}
+          <Layout.Section>
             <BlockStack gap="400">
               {!embed.enabled ? (
                 <Banner
@@ -296,7 +301,7 @@ export function CampaignEditorScreen() {
             </BlockStack>
           </Layout.Section>
 
-          <Layout.Section variant="oneHalf">
+          <Layout.Section variant="oneThird">
             {/* Sticky: a preview that scrolls out of view while you edit is not a
                 live preview. Only the settings column moves. */}
             <StickyPreview>
