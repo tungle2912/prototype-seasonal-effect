@@ -58,7 +58,6 @@ import {
   cursorSummary,
   decorationsSummary,
   fallingSummary,
-  momentsSummary,
   musicSummary,
   skinSummary,
 } from '../../state/summaries';
@@ -69,11 +68,15 @@ import { issueFor, type Issue } from '../../state/validation';
  *
  * Grouped by what each one does to a shopper, ordered from what they feel first to
  * what reaches them last: atmosphere, then the one thing they read, then the look,
- * then the moments, then sound. Template sits at the top of this tab rather than in
- * a tab of its own, because picking an occasion and seeing what it does is one job.
+ * then sound. Template sits at the top of this tab rather than in a tab of its own,
+ * because picking an occasion and seeing what it does is one job.
+ *
+ * The one-off bursts (add to cart, free shipping, order confirmed) are not here.
+ * They are answers to "when does this fire", which is the trigger's question, so
+ * they sit beside it in Schedule & trigger instead of being asked twice.
  */
 
-type SectionKey = 'falling' | 'decorations' | 'cursor' | 'bar' | 'skin' | 'moments' | 'music';
+type SectionKey = 'falling' | 'decorations' | 'cursor' | 'bar' | 'skin' | 'music';
 
 interface ElementsTabProps {
   campaign: Campaign;
@@ -89,7 +92,6 @@ export function ElementsTab({ campaign, onChange, issues }: ElementsTabProps) {
     cursor: false,
     bar: false,
     skin: false,
-    moments: false,
     music: false,
   });
 
@@ -105,7 +107,7 @@ export function ElementsTab({ campaign, onChange, issues }: ElementsTabProps) {
       elements: { ...campaign.elements, [key]: { ...campaign.elements[key], ...value } },
     });
 
-  const { falling, decorations, cursor, bar, skin, moments, music } = campaign.elements;
+  const { falling, decorations, cursor, bar, skin, music } = campaign.elements;
 
   return (
     <BlockStack gap="400">
@@ -222,8 +224,8 @@ export function ElementsTab({ campaign, onChange, issues }: ElementsTabProps) {
             />
 
             <Text as="p" variant="bodySm" tone="subdued">
-              Blinking lights hold still for a shopper who has reduce-motion on, and decorations move
-              below the announcement bar rather than covering it.
+              Blinking lights hold still for a shopper who has reduce-motion on, and decorations
+              move below the announcement bar rather than covering it.
             </Text>
           </BlockStack>
         </EffectSection>
@@ -262,8 +264,9 @@ export function ElementsTab({ campaign, onChange, issues }: ElementsTabProps) {
 
             <Banner tone="info">
               <p>
-                Desktop only — the script is not even downloaded on a touch device. The system cursor
-                comes back over any input, link or button, and the trail stops when nothing moves.
+                Desktop only — the script is not even downloaded on a touch device. The system
+                cursor comes back over any input, link or button, and the trail stops when nothing
+                moves.
               </p>
             </Banner>
           </BlockStack>
@@ -320,40 +323,6 @@ export function ElementsTab({ campaign, onChange, issues }: ElementsTabProps) {
               and the free-shipping bar. No fonts, no layout, nothing on checkout — and switching it
               off puts everything back at once.
             </Text>
-          </BlockStack>
-        </EffectSection>
-      </GroupCard>
-
-      {/* --- Shopper moments ---------------------------------------------- */}
-      <GroupCard title="Shopper moments" description="Fires at a moment, not all the time.">
-        <EffectSection
-          id="section-moments"
-          title="Cart & thank-you moments"
-          summary={momentsSummary(campaign)}
-          enabled={moments.enabled}
-          onToggle={(next) => patch('moments', { enabled: next })}
-          open={open.moments}
-          onOpenChange={(next) => toggleOpen('moments', next)}
-        >
-          <BlockStack gap="200">
-            <Checkbox
-              label="Add to cart"
-              helpText="A short burst from the button the shopper just pressed."
-              checked={moments.addToCart}
-              onChange={(next) => patch('moments', { addToCart: next })}
-            />
-            <Checkbox
-              label="Free shipping reached"
-              helpText="Fires once when the cart crosses the threshold, not again on the next item."
-              checked={moments.freeShipping}
-              onChange={(next) => patch('moments', { freeShipping: next })}
-            />
-            <Checkbox
-              label="Order confirmed"
-              helpText="On the thank-you page, for at most three seconds. The preview cannot show it — that page belongs to checkout."
-              checked={moments.orderConfirmed}
-              onChange={(next) => patch('moments', { orderConfirmed: next })}
-            />
           </BlockStack>
         </EffectSection>
       </GroupCard>
@@ -557,9 +526,9 @@ function BarSettings({
             </div>
           </InlineGrid>
 
-          {/* Compact: a countdown is a strip of digits, so a tall tile spent most
-              of its height on empty background and pushed the rest of the bar
-              settings off the screen. */}
+          {/* Compact and captionless: a countdown is a strip of digits, and the
+              caption underneath was squeezing the one thing being chosen. Two
+              across, so the digits are drawn at the size they will really be. */}
           <TileGrid
             label="Countdown style"
             options={countdownStyles.map((style) => ({
@@ -571,6 +540,7 @@ function BarSettings({
             columns={2}
             perPage={4}
             size="compact"
+            captionHidden
             onChange={(next) => patchBar({ style: next as CountdownStyle })}
           />
 
@@ -598,8 +568,8 @@ function BarSettings({
           ) : null}
 
           <Text as="p" variant="bodySm" tone="subdued">
-            The countdown never resets per session. A fake deadline is misleading advertising, and it
-            is treated as such in the EU and the UK.
+            The countdown never resets per session. A fake deadline is misleading advertising, and
+            it is treated as such in the EU and the UK.
           </Text>
         </BlockStack>
       ) : null}

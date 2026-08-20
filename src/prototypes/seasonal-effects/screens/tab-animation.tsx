@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   Divider,
+  InlineGrid,
   InlineStack,
   Layout,
   List,
@@ -119,10 +120,11 @@ export function TabAnimationScreen() {
         </Badge>
       }
     >
-      <Layout>
-        {/* Primary section plus a one-third rail: the settings are what the merchant
-            works in, and a browser tab is a small thing to draw. */}
-        <Layout.Section>
+      {/* `InlineGrid`, not `Layout`: grid items stretch to the row height, and
+          without that the preview rail is only as tall as the preview itself —
+          which leaves `position: sticky` nothing to stick to. */}
+      <InlineGrid columns={{ xs: 1, lg: 'minmax(0, 1fr) 24rem' }} gap="400">
+        <div>
           {loading ? (
             <Card>
               <SkeletonBodyText lines={10} />
@@ -151,7 +153,9 @@ export function TabAnimationScreen() {
 
               {!embed.enabled ? (
                 <Banner tone="warning">
-                  <p>The app embed is off, so this module is not running on your storefront either.</p>
+                  <p>
+                    The app embed is off, so this module is not running on your storefront either.
+                  </p>
                 </Banner>
               ) : null}
 
@@ -246,8 +250,8 @@ export function TabAnimationScreen() {
                     </InlineStack>
 
                     <Text as="p" variant="bodySm" tone="subdued">
-                      Up to {TAB_MESSAGE_LIMIT}, cycled in order. A browser tab is narrow and cuts the
-                      rest off, which is why {TAB_MESSAGE_LENGTH} characters is the limit.
+                      Up to {TAB_MESSAGE_LIMIT}, cycled in order. A browser tab is narrow and cuts
+                      the rest off, which is why {TAB_MESSAGE_LENGTH} characters is the limit.
                     </Text>
                   </BlockStack>
 
@@ -275,7 +279,10 @@ export function TabAnimationScreen() {
                           />
                         </Box>
 
-                        <Button onClick={() => setEmojiTarget(index)} accessibilityLabel={`Add emoji to message ${index + 1}`}>
+                        <Button
+                          onClick={() => setEmojiTarget(index)}
+                          accessibilityLabel={`Add emoji to message ${index + 1}`}
+                        >
                           Emoji
                         </Button>
 
@@ -321,44 +328,41 @@ export function TabAnimationScreen() {
 
                   <List>
                     <List.Item>
-                      It only runs while the tab is in the background. A shopper looking at your store
-                      never sees the title move.
+                      It only runs while the tab is in the background. A shopper looking at your
+                      store never sees the title move.
                     </List.Item>
                     <List.Item>
-                      The original title and favicon are captured before the first change and restored
-                      exactly, so coming back leaves no trace.
+                      The original title and favicon are captured before the first change and
+                      restored exactly, so coming back leaves no trace.
                     </List.Item>
                     <List.Item>
-                      A shopper with reduce-motion on sees the first message once, static, instead of a
-                      cycle.
+                      A shopper with reduce-motion on sees the first message once, static, instead
+                      of a cycle.
                     </List.Item>
                   </List>
                 </BlockStack>
               </Card>
             </BlockStack>
           )}
-        </Layout.Section>
+        </div>
 
-        <Layout.Section variant="oneThird">
-          <StickyPreview>
-            <Card>
-              <BlockStack gap="300">
-                <BlockStack gap="100">
-                  <Text as="h2" variant="headingMd">
-                    Preview
-                  </Text>
-                  <Text as="p" variant="bodySm" tone="subdued">
-                    This runs only while you are on this screen — an admin tab left open in the
-                    background should not be spending frames on a preview.
-                  </Text>
-                </BlockStack>
-
-                <BrowserTabPreview settings={tabAnimation} />
+        <StickyPreview>
+          <Card>
+            <BlockStack gap="300">
+              <BlockStack gap="100">
+                <Text as="h2" variant="headingMd">
+                  Preview
+                </Text>
+                <Text as="p" variant="bodySm" tone="subdued">
+                  Runs only while this screen is open.
+                </Text>
               </BlockStack>
-            </Card>
-          </StickyPreview>
-        </Layout.Section>
-      </Layout>
+
+              <BrowserTabPreview settings={tabAnimation} />
+            </BlockStack>
+          </Card>
+        </StickyPreview>
+      </InlineGrid>
 
       <EmojiPickerModal
         open={emojiTarget !== null}

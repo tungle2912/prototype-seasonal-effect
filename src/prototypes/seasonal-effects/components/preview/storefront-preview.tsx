@@ -2,7 +2,10 @@ import { BlockStack, Box, Card, InlineStack, Modal, Text } from '@shopify/polari
 import { useMemo, useRef, useState } from 'react';
 
 import type { Campaign } from '../../../../mocks/seasonal-effects/campaigns';
-import type { ScrollToTopSettings, StoreSettings } from '../../../../mocks/seasonal-effects/modules';
+import type {
+  ScrollToTopSettings,
+  StoreSettings,
+} from '../../../../mocks/seasonal-effects/modules';
 import { paletteById } from '../../../../mocks/seasonal-effects/palettes';
 import { optionsFrom } from '../options';
 import { Segmented } from '../segmented';
@@ -68,15 +71,19 @@ export function StorefrontPreview({
   return (
     <Card padding="0">
       <Box padding="300" borderBlockEndWidth="025" borderColor="border">
-        <InlineStack align="space-between" blockAlign="center" gap="300" wrap>
+        {/* No field labels: "Mobile / Desktop" and "Home / Cart" name themselves,
+            and two label lines in a 22.5rem rail is height the preview needs. */}
+        <InlineStack align="space-between" blockAlign="center" gap="200" wrap>
           <Segmented<Device>
             label="Device"
+            labelHidden
             options={optionsFrom(DEVICE_LABEL, ['MOBILE', 'DESKTOP'])}
             value={device}
             onChange={setDevice}
           />
           <Segmented<PreviewPage>
             label="Page"
+            labelHidden
             options={optionsFrom(PAGE_LABEL, ['HOME', 'CART'])}
             value={page}
             onChange={setPage}
@@ -90,24 +97,15 @@ export function StorefrontPreview({
         </div>
       </Box>
 
+      {/* One line, not three paragraphs: the preview is the explanation, and a
+          rail full of prose is a rail too tall to stay on screen. */}
       <Box padding="300" borderBlockStartWidth="025" borderColor="border">
-        <BlockStack gap="100">
-          <Text as="p" variant="bodySm" tone="subdued">
-            A phone never loads the cursor trail at all, and speed guard cuts the particle count.
-            Switch to Desktop to open a wider preview and move the pointer inside it.
-          </Text>
-          {page === 'CART' ? (
-            <Text as="p" variant="bodySm" tone="subdued">
-              Cross the free-shipping threshold to fire that moment once — adding another item does
-              not fire it again.
-            </Text>
-          ) : (
-            <Text as="p" variant="bodySm" tone="subdued">
-              Press Add to cart to fire that moment. The order-confirmed one is not here: the
-              thank-you page belongs to checkout, which no preview can stand in for.
-            </Text>
-          )}
-        </BlockStack>
+        <Text as="p" variant="bodySm" tone="subdued">
+          {page === 'CART'
+            ? 'Cross the threshold to fire that moment once.'
+            : 'Press Add to cart to fire that moment.'}{' '}
+          No cursor trail on a phone — open Desktop for that.
+        </Text>
       </Box>
 
       {/* Desktop is a modal, not a second column: a desktop storefront needs the
@@ -123,6 +121,7 @@ export function StorefrontPreview({
           <BlockStack gap="300">
             <Segmented<PreviewPage>
               label="Page"
+              labelHidden
               options={optionsFrom(PAGE_LABEL, ['HOME', 'CART'])}
               value={page}
               onChange={setPage}
@@ -131,8 +130,7 @@ export function StorefrontPreview({
             <StorefrontFrame {...frameProps} device="DESKTOP" height={520} />
 
             <Text as="p" variant="bodySm" tone="subdued">
-              Move the pointer inside the frame to see the cursor trail. Nothing here can intercept a
-              click, and closing this leaves the phone preview exactly as it was.
+              Move the pointer inside the frame to see the cursor trail.
             </Text>
           </BlockStack>
         </Modal.Section>
@@ -423,7 +421,9 @@ function HomePage({
                 SALE
               </span>
             </div>
-            <div style={{ fontSize: '7.5px', marginTop: '4px', lineHeight: 1.3 }}>{product.name}</div>
+            <div style={{ fontSize: '7.5px', marginTop: '4px', lineHeight: 1.3 }}>
+              {product.name}
+            </div>
             <div style={{ fontSize: '7.5px', display: 'flex', gap: '4px', marginTop: '1px' }}>
               <b>{product.price}</b>
               <s style={{ color: skinOn ? accent : '#9b9b9b' }}>{product.was}</s>

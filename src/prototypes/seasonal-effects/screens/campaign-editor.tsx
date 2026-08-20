@@ -6,6 +6,7 @@ import {
   Card,
   ContextualSaveBar,
   EmptyState,
+  InlineGrid,
   InlineStack,
   Layout,
   Modal,
@@ -37,11 +38,15 @@ import { TargetingTab } from './editor/targeting-tab';
  * The campaign editor.
  *
  * Two-column, because Built for Shopify asks visual editors for exactly that: the
- * merchant edits on the left and watches the result on the right. The split is
- * Polaris' primary section plus a one-third rail rather than two halves — the
- * editor is where the work happens, and the preview is a phone. The preview lives
- * outside the tabs and never remounts when they switch, so the snow does not restart
- * every time they go to check the schedule.
+ * merchant edits on the left and watches the result on the right. Not two halves —
+ * the editor takes the room it needs and the preview rail is the width of a phone.
+ * The preview lives outside the tabs and never remounts when they switch, so the
+ * snow does not restart every time they go to check the schedule.
+ *
+ * The rail holds the preview and nothing else. Anything stacked under it makes the
+ * column taller than the window, and a sticky box taller than the window cannot
+ * stay on screen — which is why the request-an-effect card is at the foot of the
+ * editor instead.
  *
  * Unsaved work is reported through `ContextualSaveBar` rather than a Save button
  * parked in the header — that is how the admin does it, and it makes discarding an
@@ -99,7 +104,10 @@ export function CampaignEditorScreen() {
 
   if (error) {
     return (
-      <Page title="Campaign" backAction={{ content: 'Campaigns', onAction: () => goTo('CAMPAIGNS') }}>
+      <Page
+        title="Campaign"
+        backAction={{ content: 'Campaigns', onAction: () => goTo('CAMPAIGNS') }}
+      >
         <Layout>
           <Layout.Section>
             <Banner
@@ -142,7 +150,10 @@ export function CampaignEditorScreen() {
   // editor before any campaign exists.
   if (!draft) {
     return (
-      <Page title="Campaign" backAction={{ content: 'Campaigns', onAction: () => goTo('CAMPAIGNS') }}>
+      <Page
+        title="Campaign"
+        backAction={{ content: 'Campaigns', onAction: () => goTo('CAMPAIGNS') }}
+      >
         <Layout>
           <Layout.Section>
             <Card>
@@ -152,8 +163,8 @@ export function CampaignEditorScreen() {
                 action={{ content: 'Create campaign', onAction: createCampaign }}
               >
                 <p>
-                  A campaign holds the effects, the dates and the audience together, so the decorations
-                  go up and come down on their own.
+                  A campaign holds the effects, the dates and the audience together, so the
+                  decorations go up and come down on their own.
                 </p>
               </EmptyState>
             </Card>
@@ -210,11 +221,7 @@ export function CampaignEditorScreen() {
         backAction={{ content: 'Campaigns', onAction: () => goTo('CAMPAIGNS') }}
         title={draft.name.trim() || 'Untitled campaign'}
         subtitle={subtitle}
-        titleMetadata={
-          <Badge tone={statusTone[status]}>
-            {statusLabel[status]}
-          </Badge>
-        }
+        titleMetadata={<Badge tone={statusTone[status]}>{statusLabel[status]}</Badge>}
         primaryAction={
           publishable
             ? {
@@ -254,21 +261,26 @@ export function CampaignEditorScreen() {
             : []),
         ]}
       >
-        <Layout>
-          {/* Polaris' own two-column split, not a 50/50 one: the editor is the
-              primary section and the preview rides in the one-third rail beside
-              it. A form and a phone-sized preview do not deserve equal width. */}
-          <Layout.Section>
+        {/* `InlineGrid`, not `Layout`: Polaris' flex row aligns its columns to
+            `flex-start`, so the rail is only as tall as the preview and a sticky
+            child inside it has nowhere to travel. Grid items stretch, which is
+            what makes the preview actually stay put. The rail is a fixed 22.5rem
+            — the width of a phone — and the editor takes everything else. */}
+        <InlineGrid columns={{ xs: 1, lg: 'minmax(0, 1fr) 22.5rem' }} gap="400">
+          <div>
             <BlockStack gap="400">
               {!embed.enabled ? (
                 <Banner
                   tone="warning"
                   title="This campaign cannot reach your storefront"
-                  action={{ content: 'Turn on the app embed', onAction: () => setEmbedModalOpen(true) }}
+                  action={{
+                    content: 'Turn on the app embed',
+                    onAction: () => setEmbedModalOpen(true),
+                  }}
                 >
                   <p>
-                    The app embed is off. You can keep editing and even publish, but shoppers will see
-                    nothing until it is on.
+                    The app embed is off. You can keep editing and even publish, but shoppers will
+                    see nothing until it is on.
                   </p>
                 </Banner>
               ) : null}
@@ -298,55 +310,51 @@ export function CampaignEditorScreen() {
               ) : (
                 <TargetingTab campaign={draft} onChange={setDraft} issues={issues} />
               )}
+
+              {/* At the end of the editor, not beside the preview: the rail holds
+                  the preview and nothing else, or it grows past the window and
+                  stops being able to stick. */}
+              <Card>
+                <BlockStack gap="200">
+                  <Text as="h2" variant="headingMd">
+                    Missing an effect you need?
+                  </Text>
+                  <Text as="p" variant="bodySm" tone="subdued">
+                    Tell us the occasion or the artwork and we will build it.
+                  </Text>
+                  <InlineStack gap="200">
+                    <Button
+                      onClick={() =>
+                        showToast(
+                          'Request received. It goes into the list that decides what we build next.',
+                        )
+                      }
+                    >
+                      Request an effect
+                    </Button>
+                    <Button
+                      variant="tertiary"
+                      onClick={() => showToast('A support conversation would open here.')}
+                    >
+                      Ask for help
+                    </Button>
+                  </InlineStack>
+                </BlockStack>
+              </Card>
             </BlockStack>
-          </Layout.Section>
+          </div>
 
-          <Layout.Section variant="oneThird">
-            {/* Sticky: a preview that scrolls out of view while you edit is not a
-                live preview. Only the settings column moves. */}
-            <StickyPreview>
-              <BlockStack gap="400">
-                <StorefrontPreview
-                  campaign={draft}
-                  scrollToTop={scrollToTop}
-                  settings={settings}
-                  embedEnabled={embed.enabled}
-                />
-
-                {/* Under the preview, where a merchant realises something is missing. */}
-                <Card>
-                  <BlockStack gap="200">
-                    <Text as="h2" variant="headingMd">
-                      Missing an effect you need?
-                    </Text>
-                    <Text as="p" variant="bodySm" tone="subdued">
-                      Tell us the occasion or the artwork and we will build it. Requests are ranked by
-                      demand, and we answer within a day — within an hour during the Black Friday
-                      week.
-                    </Text>
-                    <InlineStack gap="200">
-                      <Button
-                        onClick={() =>
-                          showToast(
-                            'Request received. It goes into the list that decides what we build next.',
-                          )
-                        }
-                      >
-                        Request an effect
-                      </Button>
-                      <Button
-                        variant="tertiary"
-                        onClick={() => showToast('A support conversation would open here.')}
-                      >
-                        Ask for help
-                      </Button>
-                    </InlineStack>
-                  </BlockStack>
-                </Card>
-              </BlockStack>
-            </StickyPreview>
-          </Layout.Section>
-        </Layout>
+          {/* Sticky: a preview that scrolls out of view while you edit is not a
+              live preview. Only the settings column moves. */}
+          <StickyPreview>
+            <StorefrontPreview
+              campaign={draft}
+              scrollToTop={scrollToTop}
+              settings={settings}
+              embedEnabled={embed.enabled}
+            />
+          </StickyPreview>
+        </InlineGrid>
 
         <PublishFlow ids={pendingPublish} onClose={() => setPendingPublish([])} />
 
@@ -386,6 +394,9 @@ export function CampaignEditorScreen() {
 function dateRange(start: string, end: string): string {
   const sameYear = start.slice(0, 4) === end.slice(0, 4);
   if (!sameYear) return `${formatDate(start)} – ${formatDate(end)}`;
-  const startShort = new Date(start).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const startShort = new Date(start).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
   return `${startShort} – ${formatDate(end)}`;
 }

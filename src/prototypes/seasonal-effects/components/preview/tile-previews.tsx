@@ -7,7 +7,11 @@
  * grey. Nobody picks "Sparkle" from the word "Sparkle" (PRD 6.0.1).
  */
 
-import { artworkGlyph, type CountdownStyle, type DecorationStyle } from '../../../../mocks/seasonal-effects/effects';
+import {
+  artworkGlyph,
+  type CountdownStyle,
+  type DecorationStyle,
+} from '../../../../mocks/seasonal-effects/effects';
 import type { FallingArtwork } from '../../../../mocks/seasonal-effects/effects';
 import { artworkTileTint, type SeasonalPalette } from '../../../../mocks/seasonal-effects/palettes';
 import type { Preset } from '../../../../mocks/seasonal-effects/presets';
@@ -139,7 +143,13 @@ const DECORATION_ART: Record<DecorationStyle, React.ReactNode> = {
   ),
   GARLAND: (
     <svg viewBox="0 0 100 62" preserveAspectRatio="none" style={{ ...fill, background: '#f0f4ee' }}>
-      <path d="M0 20 Q50 40 100 20" fill="none" stroke="#4f7a52" strokeWidth="8" strokeLinecap="round" />
+      <path
+        d="M0 20 Q50 40 100 20"
+        fill="none"
+        stroke="#4f7a52"
+        strokeWidth="8"
+        strokeLinecap="round"
+      />
       <circle cx="30" cy="29" r="3" fill="#c0392b" />
       <circle cx="62" cy="31" r="3" fill="#c0392b" />
       <rect x="0" y="40" width="100" height="22" fill="#ffffff" />
@@ -174,6 +184,10 @@ export function DecorationTile({ style }: { style: DecorationStyle }) {
  * dark tiles in a row read as a warning, and the thing being chosen here is the
  * *shape* of the digits — which shows better against a quiet background than
  * against a colour competing with the announcement bar it will really sit on.
+ *
+ * Drawn at storefront size, and the tile carries no caption: the digits *are*
+ * the label, and shrinking them to make room for the word "Pill" underneath
+ * defeated the only thing the picker is for.
  */
 export function CountdownTile({ style }: { style: CountdownStyle }) {
   const shell: React.CSSProperties = {
@@ -182,7 +196,7 @@ export function CountdownTile({ style }: { style: CountdownStyle }) {
     placeItems: 'center',
     background: '#f2f3f5',
     color: '#31333a',
-    fontSize: '10px',
+    fontSize: '15px',
     fontWeight: 600,
     letterSpacing: '.02em',
   };
@@ -190,14 +204,14 @@ export function CountdownTile({ style }: { style: CountdownStyle }) {
   const chip: React.CSSProperties = {
     background: '#ffffff',
     border: '1px solid #d5d8dd',
-    borderRadius: '3px',
-    padding: '2px 4px',
+    borderRadius: '4px',
+    padding: '3px 7px',
   };
 
   if (style === 'PILL') {
     return (
       <span style={shell}>
-        <span style={{ ...chip, borderRadius: '999px', padding: '3px 10px' }}>02 : 14 : 33</span>
+        <span style={{ ...chip, borderRadius: '999px', padding: '4px 14px' }}>02 : 14 : 33</span>
       </span>
     );
   }
@@ -213,7 +227,7 @@ export function CountdownTile({ style }: { style: CountdownStyle }) {
   if (style === 'DIGIT_BOXES') {
     return (
       <span style={shell}>
-        <span style={{ display: 'flex', gap: '3px' }}>
+        <span style={{ display: 'flex', gap: '5px' }}>
           {['02', '14', '33'].map((value) => (
             <span key={value} style={chip}>
               {value}
@@ -226,15 +240,15 @@ export function CountdownTile({ style }: { style: CountdownStyle }) {
 
   return (
     <span style={shell}>
-      <span style={{ display: 'flex', gap: '5px' }}>
+      <span style={{ display: 'flex', gap: '8px' }}>
         {[
           ['02', 'hrs'],
           ['14', 'min'],
           ['33', 'sec'],
         ].map(([value, unit]) => (
-          <span key={unit} style={{ display: 'grid', justifyItems: 'center', gap: '1px' }}>
+          <span key={unit} style={{ display: 'grid', justifyItems: 'center', gap: '2px' }}>
             <span style={chip}>{value}</span>
-            <span style={{ fontSize: '6px', fontWeight: 500, color: '#6b6f76' }}>{unit}</span>
+            <span style={{ fontSize: '9px', fontWeight: 500, color: '#6b6f76' }}>{unit}</span>
           </span>
         ))}
       </span>

@@ -33,6 +33,12 @@ interface TileGridProps {
   helpText?: string;
   /** The surrounding card already names it, so the field label would repeat. */
   labelHidden?: boolean;
+  /**
+   * Drops the caption under each tile. For options the drawing already spells
+   * out — a countdown is its own label, and the caption was taking the room the
+   * digits needed. The name still reaches a screen reader and the tooltip.
+   */
+  captionHidden?: boolean;
   /** Icon tiles are square and captionless; preview tiles carry a label. */
   variant?: 'preview' | 'icon';
   /**
@@ -55,6 +61,7 @@ export function TileGrid({
   perPage,
   helpText,
   labelHidden,
+  captionHidden,
   variant = 'preview',
   size = 'default',
   onUpload,
@@ -101,6 +108,7 @@ export function TileGrid({
               disabled={disabled}
               onClick={() => onChange(option.value)}
               title={option.label}
+              aria-label={option.label}
               style={{
                 padding: 0,
                 border: `var(--p-border-width-025) solid ${
@@ -129,7 +137,7 @@ export function TileGrid({
                       : size === 'large'
                         ? '2.4 / 1'
                         : size === 'compact'
-                          ? '5 / 1'
+                          ? '4.5 / 1'
                           : '4 / 3',
                   overflow: 'hidden',
                   color: 'var(--p-color-text)',
@@ -138,7 +146,7 @@ export function TileGrid({
                 {option.preview}
               </span>
 
-              {variant === 'preview' ? (
+              {variant === 'preview' && !captionHidden ? (
                 <span
                   style={{
                     display: 'block',

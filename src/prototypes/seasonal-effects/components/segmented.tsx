@@ -20,6 +20,8 @@ interface SegmentedProps<T extends string> {
   helpText?: string;
   disabled?: boolean;
   fullWidth?: boolean;
+  /** For a track whose options name themselves — Mobile/Desktop, Home/Cart. */
+  labelHidden?: boolean;
 }
 
 export function Segmented<T extends string>({
@@ -30,12 +32,15 @@ export function Segmented<T extends string>({
   helpText,
   disabled,
   fullWidth,
+  labelHidden,
 }: SegmentedProps<T>) {
   return (
     <BlockStack gap="150">
-      <Text as="span" variant="bodySm" tone={disabled ? 'disabled' : 'subdued'}>
-        {label}
-      </Text>
+      {labelHidden ? null : (
+        <Text as="span" variant="bodySm" tone={disabled ? 'disabled' : 'subdued'}>
+          {label}
+        </Text>
+      )}
 
       {/* The visible label belongs to no single option, so the group carries a name. */}
       <div

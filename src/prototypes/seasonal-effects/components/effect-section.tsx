@@ -1,4 +1,12 @@
-import { Box, Button, Checkbox, Collapsible, InlineStack } from '@shopify/polaris';
+import {
+  BlockStack,
+  Box,
+  Button,
+  Checkbox,
+  Collapsible,
+  InlineStack,
+  Text,
+} from '@shopify/polaris';
 import type { ReactNode } from 'react';
 
 /**
@@ -14,6 +22,11 @@ import type { ReactNode } from 'react';
  *
  * A collapsed row still shows its configuration, so nothing has to be opened
  * just to find out what it is set to (PRD 6.0).
+ *
+ * The title and the summary are the hit area for opening the row, not just the
+ * chevron — a 16px target at the far end of the card is not where anyone aims.
+ * The checkbox stays a separate control, because on/off and open/closed are two
+ * different questions and one click must never answer both.
  */
 
 interface EffectSectionProps {
@@ -41,16 +54,44 @@ export function EffectSection({
 }: EffectSectionProps) {
   return (
     <Box>
-      <InlineStack align="space-between" blockAlign="start" gap="400" wrap={false}>
-        <Checkbox
-          label={title}
-          helpText={summary}
-          checked={enabled}
-          onChange={(next) => {
-            if (next) onOpenChange(true);
-            onToggle(next);
-          }}
-        />
+      <InlineStack align="space-between" blockAlign="center" gap="200" wrap={false}>
+        <InlineStack gap="150" blockAlign="center" wrap={false}>
+          {/* Label hidden: the clickable heading beside it is the visible name,
+              and repeating it would read twice to a screen reader. */}
+          <Checkbox
+            label={title}
+            labelHidden
+            checked={enabled}
+            onChange={(next) => {
+              if (next) onOpenChange(true);
+              onToggle(next);
+            }}
+          />
+
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={id}
+            onClick={() => onOpenChange(!open)}
+            style={{
+              padding: 0,
+              border: 'none',
+              background: 'none',
+              textAlign: 'left',
+              cursor: 'pointer',
+              color: 'inherit',
+            }}
+          >
+            <BlockStack gap="050">
+              <Text as="span" variant="bodyMd" fontWeight="medium">
+                {title}
+              </Text>
+              <Text as="span" variant="bodySm" tone="subdued">
+                {summary}
+              </Text>
+            </BlockStack>
+          </button>
+        </InlineStack>
 
         <Button
           variant="tertiary"
@@ -63,7 +104,7 @@ export function EffectSection({
       </InlineStack>
 
       <Collapsible id={id} open={open} transition={{ duration: '150ms', timingFunction: 'ease' }}>
-        {/* Indented to sit under the checkbox label, not under the checkbox. */}
+        {/* Indented to sit under the title, not under the checkbox. */}
         <Box paddingBlockStart="300" paddingInlineStart="600">
           {children}
         </Box>

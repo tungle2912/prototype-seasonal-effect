@@ -112,10 +112,11 @@ export function ScrollToTopScreen() {
         </Badge>
       }
     >
-      <Layout>
-        {/* Primary section plus a one-third rail, not two halves: this screen is a
-            long form and the preview is one button on a page. */}
-        <Layout.Section>
+      {/* `InlineGrid`, not `Layout`: grid items stretch to the row height, and
+          without that the preview rail is only as tall as the preview itself —
+          which leaves `position: sticky` nothing to stick to. */}
+      <InlineGrid columns={{ xs: 1, lg: 'minmax(0, 1fr) 24rem' }} gap="400">
+        <div>
           {loading ? (
             <Card>
               <SkeletonBodyText lines={10} />
@@ -135,16 +136,18 @@ export function ScrollToTopScreen() {
 
               {!embed.enabled ? (
                 <Banner tone="warning">
-                  <p>The app embed is off, so this module is not running on your storefront either.</p>
+                  <p>
+                    The app embed is off, so this module is not running on your storefront either.
+                  </p>
                 </Banner>
               ) : null}
 
               {overridden ? (
                 <Banner tone="info" title="A live campaign is choosing these colours">
                   <p>
-                    “Match the seasonal skin” is on and a campaign with a seasonal skin is live, so the
-                    button borrows its colour. Your colours below come back the moment the campaign
-                    ends — or turn the match off to use them now.
+                    “Match the seasonal skin” is on and a campaign with a seasonal skin is live, so
+                    the button borrows its colour. Your colours below come back the moment the
+                    campaign ends — or turn the match off to use them now.
                   </p>
                 </Banner>
               ) : null}
@@ -246,8 +249,8 @@ export function ScrollToTopScreen() {
                       Colours
                     </Text>
                     <Text as="p" variant="bodySm" tone="subdued">
-                      Every colour has a hover twin. Hover the button in the preview to check the pair
-                      is still readable — that is the only way a white-on-white hover shows up.
+                      Every colour has a hover twin. Hover the button in the preview to check the
+                      pair is still readable — that is the only way a white-on-white hover shows up.
                     </Text>
                   </BlockStack>
                   <Divider />
@@ -285,7 +288,9 @@ export function ScrollToTopScreen() {
                     <ColorField
                       label="Background on hover"
                       value={scrollToTop.backgroundHoverColour}
-                      onChange={(backgroundHoverColour) => setScrollToTop({ backgroundHoverColour })}
+                      onChange={(backgroundHoverColour) =>
+                        setScrollToTop({ backgroundHoverColour })
+                      }
                       disabled={scrollToTop.transparentBackground || overridden}
                     />
                   </InlineGrid>
@@ -433,40 +438,31 @@ export function ScrollToTopScreen() {
               </Card>
             </BlockStack>
           )}
-        </Layout.Section>
+        </div>
 
-        <Layout.Section variant="oneThird">
-          <StickyPreview>
-            <Card>
-              <BlockStack gap="300">
-                <BlockStack gap="100">
-                  <Text as="h2" variant="headingMd">
-                    Preview
-                  </Text>
-                  <Text as="p" variant="bodySm" tone="subdued">
-                    Scroll the page below, then hover the button. Both are checks you cannot make by
-                    reading a setting name.
-                  </Text>
-                </BlockStack>
-
-                <ScrollPreview settings={scrollToTop} skinHex={skinHex} />
+        <StickyPreview>
+          <Card>
+            <BlockStack gap="300">
+              <BlockStack gap="100">
+                <Text as="h2" variant="headingMd">
+                  Preview
+                </Text>
+                <Text as="p" variant="bodySm" tone="subdued">
+                  Scroll the page below, then hover the button.
+                </Text>
               </BlockStack>
-            </Card>
-          </StickyPreview>
-        </Layout.Section>
-      </Layout>
+
+              <ScrollPreview settings={scrollToTop} skinHex={skinHex} />
+            </BlockStack>
+          </Card>
+        </StickyPreview>
+      </InlineGrid>
     </Page>
   );
 }
 
 /** 30 icons in six columns: five full rows, so the grid has no ragged last line. */
-function ScrollIconGrid({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (id: string) => void;
-}) {
+function ScrollIconGrid({ value, onChange }: { value: string; onChange: (id: string) => void }) {
   return (
     <BlockStack gap="200">
       <Text as="span" variant="bodySm" tone="subdued">
